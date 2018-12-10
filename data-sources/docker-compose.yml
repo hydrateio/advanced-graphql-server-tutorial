@@ -1,0 +1,28 @@
+version: "3.1"
+services:
+  mongo:
+    image: mongo:4.0.4
+    restart: always
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_DATABASE: central-library
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: rootpw
+    volumes:
+      - ./mongodb/db:/data/db
+      - ./mongodb/init:/docker-entrypoint-initdb.d
+
+  mysql:
+    image: mysql:8.0.13
+    restart: always
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpw
+      MYSQL_DATABASE: central-library
+      MYSQL_USER: graphql
+      MYSQL_PASSWORD: graphqlpw
+    volumes:
+      - ./mysql/db:/var/lib/mysql
+      - ./mysql/init:/docker-entrypoint-initdb.d
