@@ -1,5 +1,5 @@
-const express = require('express');
-const { ApolloServer, gql } = require('apollo-server-express');
+import express from 'express';
+import { ApolloServer, gql } from 'apollo-server-express';
 
 const checkouts = [
   {
@@ -92,15 +92,20 @@ const typeDefs = gql`
 // Provide resolver functions for your schema fields
 const resolvers = {
   Query: {
-    checkouts: (root, args) => checkouts.filter(checkout => {
-      if (args.user_email && args.user_email !== checkout.user_email) {
-        return false;
+    checkouts: (root, args) => {
+      const keys = Object.keys(args);
+      if (keys.length === 0) {
+        return checkouts;
       }
-      if (args.asset_upc && args.asset_upc !== checkout.asset_upc) {
-        return false;
-      }
-      return true;
-    }),
+      return checkouts.filter(checkout => {
+        for (const key of keys) {
+          if (checkout[key] !== args[key]) {
+            return false;
+          }
+        }
+        return true;
+      });
+    }
   }
 };
 

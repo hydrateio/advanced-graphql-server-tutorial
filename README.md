@@ -42,16 +42,24 @@ For MongoDB GUI, I use [Robo 3T](https://robomongo.org/) available from [https:/
 ## Starting the server
 
 This project includes three NPM scripts to work with your server.
+```
+npm run build
+```
+- Uses babel to transpile the source to Node 10 compatible code
+
 
 ```
 npm run start
 ```
-- Starts the server as a single node process
+- Starts the build server from the dist directory as a single node process
+- This requires that the server had been previously build
+
 
 ```
 npm run watch
 ```
-- Starts the server with nodemon and automatically restarts the server when any src file changes
+- Starts the server from source with nodemon and automatically restarts the server when any src file changes
+
 
 ### Debugging
 At some points in the lessons, it will be useful to inspect various arguments and variables in the project. A debug NPM script has been created to start a
@@ -65,3 +73,10 @@ If you are using [Visual Studio Code](https://code.visualstudio.com/) for develo
 will allow you to add breakpoints directly in your code editor.
 
 To use, run the `npm run debug` script and then launch "Attach to debugger" via Visual Studio Code debug feature.
+
+## Project structure
+
+This project uses [babel](https://babeljs.io/) to allow for ES6 module syntax usage.
+
+This project uses [apollo-server-express](https://www.npmjs.com/package/apollo-server-express) to provide convenient implementation of the GraphQL server spec
+and to easily add a [GraphiQL](https://www.npmjs.com/package/graphiql) client for development purposes. 
