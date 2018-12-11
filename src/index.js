@@ -1,5 +1,5 @@
-const express = require('express');
-const { ApolloServer, gql } = require('apollo-server-express');
+import express from 'express';
+import { ApolloServer, gql } from 'apollo-server-express';
 
 const checkouts = [
   {

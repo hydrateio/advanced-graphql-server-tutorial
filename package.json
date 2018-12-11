@@ -7,9 +7,12 @@
   "author": "",
   "license": "MIT",
   "scripts": {
-    "start": "node src/index.js",
-    "watch": "nodemon -w src -e js,graphql src/index.js",
-    "debug": "nodemon --inspect=127.0.0.1:9228 -w src -e js,graphql ./src/index.js",
+    "clean": "rm -rf dist",
+    "prebuild": "npm run clean",
+    "build": "babel src --out-dir dist",
+    "start": "node dist/index.js",
+    "watch": "nodemon -r @babel/register -w src -e js src/index.js",
+    "debug": "nodemon -r @babel/register --inspect=127.0.0.1:9228 -w src -e js ./src/index.js",
     "data-start": "pushd data-sources && docker-compose up -d",
     "data-stop": "pushd data-sources && docker-compose down",
     "data-reset": "npm run data-stop && rimraf data-sources/mysql/db/* && rimraf data-sources/mongodb/db/*"
@@ -20,6 +23,10 @@
     "graphql": "14.0.2"
   },
   "devDependencies": {
+    "@babel/cli": "7.2.0",
+    "@babel/core": "7.2.0",
+    "@babel/preset-env": "7.2.0",
+    "@babel/register": "7.0.0",
     "nodemon": "1.18.7",
     "rimraf": "2.6.2"
   }
