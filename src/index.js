@@ -1,80 +1,7 @@
 import express from 'express';
 import { ApolloServer, gql } from 'apollo-server-express';
 import env from './env';
-
-const checkouts = [
-  {
-    userEmail: 'dbernath27@jalbum.net',
-    assetUpc: '9000000001',
-    checkoutDate: '2000-03-02 14:30:17',
-    checkinDate: '2000-03-03 13:25:46',
-  },
-  {
-    userEmail: 'lholyland21@blog.com',
-    assetUpc: '9000000001',
-    checkoutDate: '2000-06-03 14:55:13',
-    checkinDate: '2000-06-11 14:15:31',
-  },
-  {
-    userEmail: 'ggenery22@elegantthemes.com',
-    assetUpc: '9000000001',
-    checkoutDate: '2000-08-11 11:42:40',
-    checkinDate: '2000-08-16 11:41:42',
-  },
-  {
-    userEmail: 'hmacardle23@google.co.uk',
-    assetUpc: '9000000001',
-    checkoutDate: '2001-03-16 17:06:56',
-    checkinDate: '2001-03-31 15:34:38',
-  },
-  {
-    userEmail: 'fayris1d@reddit.com',
-    assetUpc: '9000000001',
-    checkoutDate: '2001-12-01 11:05:15',
-    checkinDate: '2001-12-06 17:07:16',
-  },
-  {
-    userEmail: 'rmeiklem1t@rediff.com',
-    assetUpc: '9000000001',
-    checkoutDate: '2002-06-06 09:04:26',
-    checkinDate: '2002-06-27 10:04:39',
-  },
-  {
-    userEmail: 'wmorecombe1e@timesonline.co.uk',
-    assetUpc: '9000000001',
-    checkoutDate: '2002-10-27 18:52:23',
-    checkinDate: '2002-11-01 14:27:41',
-  },
-  {
-    userEmail: 'cbastie2b@oaic.gov.au',
-    assetUpc: '9000000001',
-    checkoutDate: '2003-01-01 14:38:50',
-    checkinDate: '2003-01-10 16:54:10',
-  },
-  {
-    userEmail: 'binkpin2h@issuu.com',
-    assetUpc: '9000000001',
-    checkoutDate: '2003-03-10 11:25:11',
-    checkinDate: '2003-03-30 13:52:14',
-  },
-  {
-    userEmail: 'ekenworthl@list-manage.com',
-    assetUpc: '9000000001',
-    checkoutDate: '2003-04-30 12:47:19',
-    checkinDate: null,
-  },
-  {
-    userEmail: 'dbernath27@jalbum.net',
-    assetUpc: '9000000007',
-    checkoutDate: '2001-03-07 17:24:23',
-    checkinDate: '2001-03-16 18:19:25',
-  },
-  {
-    userEmail: 'dbernath27@jalbum.net',
-    assetUpc: '9000000011',
-    checkoutDate: '2004-07-11 17:09:14',
-  },
-];
+import mysqlDataConnector from './data-connectors/mysql';
 
 // Construct a schema, using GraphQL schema language
 const typeDefs = gql`
@@ -90,19 +17,43 @@ const typeDefs = gql`
   }
 `;
 
+/**
+ * Our database column names don't always match up with our GraphQL type property names.
+ * Here we create a map used to convert one to the other.
+ */
+const checkoutTableVariablesMap = {
+  userEmail: 'user_email',
+  assetUpc: 'asset_upc',
+  checkoutDate: 'checkout_date',
+  checkinDate: 'checkin_date',
+};
+
 // Provide resolver functions for your schema fields
 const resolvers = {
   Query: {
-    checkouts: (root, args) => checkouts.filter(checkout => {
-      if (args.userEmail && args.userEmail !== checkout.userEmail) {
-        return false;
+    checkouts: async (root, args) => {
+      /**
+       * First we create our query string mapping table column names to the names of our type declaration.
+       */
+      const requestedMySQLFields = Object.keys(checkoutTableVariablesMap).map(key => `${checkoutTableVariablesMap[key]} as ${key}`);
+      let queryStr = `select ${requestedMySQLFields.join(',')} from checkouts`;
+
+      /**
+       * The args variable are the arguments passed by the user to the GraphQL server.
+       * When arguments are passed, we'll want to modify our database query to return only the requested results.
+       * Any time user arguments are passed to a database query, they must first be sanitized.
+       * Different database drivers have different methods for sanitizing input, but for the MySQL library that we are using, the `format` method is used.
+       * To ensure the ordering of arguments in the where clause match up with the passed values, we can use Object.entries().
+       */
+      const argEntries = Object.entries(args);
+      if (argEntries.length > 0) {
+        const whereClause = `WHERE ${argEntries.map(arg => `${checkoutTableVariablesMap[arg[0]]}=?`).join(' AND ')}`;
+        queryStr = mysqlDataConnector.format(`${queryStr} ${whereClause}`, argEntries.map(arg => arg[1]));
       }
-      if (args.assetUpc && args.assetUpc !== checkout.assetUpc) {
-        return false;
-      }
-      return true;
-    }),
-  }
+      const queryResults = await mysqlDataConnector.pool.query(queryStr);
+      return queryResults;
+    },
+  },
 };
 
 const server = new ApolloServer({ typeDefs, resolvers });
