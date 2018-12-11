@@ -38,3 +38,30 @@ For one of the exercises, we will be running queries directly against the MongoD
 MongoDB container, but you may find a graphical tool to be easier to use. 
 
 For MongoDB GUI, I use [Robo 3T](https://robomongo.org/) available from [https://robomongo.org/](https://robomongo.org/)
+
+## Starting the server
+
+This project includes three NPM scripts to work with your server.
+
+```
+npm run start
+```
+- Starts the server as a single node process
+
+```
+npm run watch
+```
+- Starts the server with nodemon and automatically restarts the server when any src file changes
+
+### Debugging
+At some points in the lessons, it will be useful to inspect various arguments and variables in the project. A debug NPM script has been created to start a
+remote inspector allowing breakpoints to be added to the code. You can start the remote inspector by running the following script
+
+```
+npm run debug
+```
+
+If you are using [Visual Studio Code](https://code.visualstudio.com/) for development, the project also includes an `Attach to debugger` launch script that 
+will allow you to add breakpoints directly in your code editor.
+
+To use, run the `npm run debug` script and then launch "Attach to debugger" via Visual Studio Code debug feature.
