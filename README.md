@@ -51,8 +51,8 @@ npm run build
 ```
 npm run start
 ```
-- Starts the build server from the dist directory as a single node process
-- This requires that the server had been previously build
+- Starts the built server from the dist directory as a single node process
+- This requires that the server had been previously built
 
 
 ```
