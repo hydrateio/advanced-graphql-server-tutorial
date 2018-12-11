@@ -1,6 +1,8 @@
 {
     "extends": "airbnb-base",
     "rules": {
-        "no-restricted-syntax": "off"
+        "no-restricted-syntax": "off",
+        "max-len": ["error", 160],
+        "no-console": "off"
     }
 }
