@@ -12,6 +12,11 @@ This project will implement a new GraphQL API for a hypothetical library system.
 running in MySQL along with a NoSQL data source containing various entity details running in MongoDB.
 
 ## Prerequisites
+
+This project is a [Node.js](https://nodejs.org/en/) project, so you will also need to have node installed. I recommend using
+[nvm](https://github.com/creationix/nvm) or [nvm-windows](https://github.com/coreybutler/nvm-windows) to install and manage your Node.js installation.
+This project is supported on Node.js version 10 and later.
+
 Data sources are provided in this project via Docker containers. You will need to install [Docker](https://www.docker.com)
 from [https://www.docker.com/products/docker-desktop](https://www.docker.com/products/docker-desktop).
 
@@ -29,9 +34,6 @@ npm run data-reset
 ```
 
 Database data is stored locally and will persist through docker compose restarts.
-
-This project is a [Node.js](https://nodejs.org/en/) project, so you will also need to have node installed. I recommend using
-[nvm](https://github.com/creationix/nvm) or [nvm-windows](https://github.com/coreybutler/nvm-windows) to install and manage your Node.js installation.
 
 ### Helpful tools
 For one of the exercises, we will be running queries directly against the MongoDB database. This can be done via the `mongo` command line if connected to the
