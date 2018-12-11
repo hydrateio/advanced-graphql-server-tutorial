@@ -8,7 +8,8 @@
   "license": "MIT",
   "scripts": {
     "start": "node src/index.js",
-    "watch": "nodemon src/index.js",
+    "watch": "nodemon -w src -e js,graphql src/index.js",
+    "debug": "nodemon --inspect=127.0.0.1:9228 -w src -e js,graphql ./src/index.js",
     "data-start": "pushd data-sources && docker-compose up -d",
     "data-stop": "pushd data-sources && docker-compose down",
     "data-reset": "npm run data-stop && rimraf data-sources/mysql/db/* && rimraf data-sources/mongodb/db/*"
