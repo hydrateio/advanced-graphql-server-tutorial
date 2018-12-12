@@ -7,8 +7,9 @@
   "author": "",
   "license": "MIT",
   "scripts": {
-    "clean": "rm -rf dist",
-    "prebuild": "npm run clean",
+    "clean": "rimraf dist",
+    "copy-schemas": "cpx src/**/*.graphql dist/",
+    "prebuild": "npm run clean && npm run copy-schemas",
     "build": "babel src --out-dir dist",
     "start": "node dist/index.js",
     "watch": "nodemon -r @babel/register -w src -e js src/index.js",
@@ -22,6 +23,8 @@
     "dotenv": "6.2.0",
     "express": "4.16.4",
     "graphql": "14.0.2",
+    "graphql-tools": "4.0.3",
+    "merge-graphql-schemas": "1.5.8",
     "mysql": "2.16.0"
   },
   "devDependencies": {
@@ -29,6 +32,7 @@
     "@babel/core": "7.2.0",
     "@babel/preset-env": "7.2.0",
     "@babel/register": "7.0.0",
+    "cpx": "1.5.0",
     "eslint": "5.10.0",
     "eslint-config-airbnb-base": "13.1.0",
     "eslint-plugin-import": "2.14.0",

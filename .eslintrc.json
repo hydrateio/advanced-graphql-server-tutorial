@@ -3,6 +3,7 @@
     "rules": {
         "no-restricted-syntax": "off",
         "max-len": ["error", 160],
-        "no-console": "off"
+        "no-console": "off",
+        "import/prefer-default-export": "off"
     }
 }
