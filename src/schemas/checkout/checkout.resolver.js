@@ -1,4 +1,4 @@
-import { getCheckouts } from './checkouts.queries';
+import { getCheckouts } from './checkout.queries';
 
 /**
  * To make our resolver code a little easier to follow, we simply map resolver queries to functions
