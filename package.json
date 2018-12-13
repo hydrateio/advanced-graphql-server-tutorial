@@ -24,7 +24,7 @@
     "express": "4.16.4",
     "graphql": "14.0.2",
     "graphql-tools": "4.0.3",
-    "merge-graphql-schemas": "1.5.8",
+    "lodash.merge": "4.6.1",
     "mysql": "2.16.0"
   },
   "devDependencies": {
