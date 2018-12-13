@@ -8,6 +8,12 @@ export default {
   Query: {
     checkouts: CheckOut.getCheckouts,
   },
+
+  Mutation: {
+    checkoutAsset: CheckOut.checkoutAsset,
+    checkinAsset: CheckOut.checkinAsset,
+  },
+
   CheckOut: {
     checkinDate: (checkout) => {
       if (checkout.checkinDate instanceof Date) {

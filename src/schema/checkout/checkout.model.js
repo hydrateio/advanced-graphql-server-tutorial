@@ -1,15 +1,6 @@
+import { ApolloError } from 'apollo-server-express';
 import mysqlDataConnector from '../../data-connectors/mysql';
-
-/**
- * Our database column names don't always match up with our GraphQL type property names.
- * Here we create a map used to convert one to the other.
- */
-const checkoutTableVariablesMap = {
-  userEmail: 'user_email',
-  assetUpc: 'asset_upc',
-  checkoutDate: 'checkout_date',
-  checkinDate: 'checkin_date',
-};
+import { checkoutTableVariablesMap, errors, mappedQueryFields } from './checkout.constants';
 
 /**
  * Writing highly optimized database query strings from user input can become heavy on business logic.
@@ -18,11 +9,7 @@ const checkoutTableVariablesMap = {
  * coverage.
  */
 function getQueryStr(args) {
-  /**
-   * First we create our query string mapping table column names to the names of our type declaration.
-   */
-  const requestedMySQLFields = Object.keys(checkoutTableVariablesMap).map(key => `${checkoutTableVariablesMap[key]} as ${key}`);
-  let queryStr = `select ${requestedMySQLFields.join(',')} from checkouts`;
+  let queryStr = `select ${mappedQueryFields} from checkouts`;
 
   /**
    * The args variable are the arguments passed by the user to the GraphQL server.
@@ -33,10 +20,22 @@ function getQueryStr(args) {
    */
   const argEntries = Object.entries(args);
   if (argEntries.length > 0) {
-    const whereClause = `WHERE ${argEntries.map(arg => `${checkoutTableVariablesMap[arg[0]]}=?`).join(' AND ')}`;
+    const filters = argEntries.map((arg) => {
+      if (arg[1] === null) {
+        return `${checkoutTableVariablesMap[arg[0]]} IS NULL`;
+      }
+      return `${checkoutTableVariablesMap[arg[0]]}=?`;
+    });
+    const whereClause = `WHERE ${(filters).join(' AND ')}`;
     queryStr = mysqlDataConnector.format(`${queryStr} ${whereClause}`, argEntries.map(arg => arg[1]));
   }
   return queryStr;
+}
+
+async function isAssetCheckedOut(assetUpc) {
+  const isCheckedOutQuery = mysqlDataConnector.format('SELECT count(*) AS row_count FROM checkouts WHERE asset_upc=? and checkin_date IS NULL', assetUpc);
+  const isCheckedOutResults = await mysqlDataConnector.pool.query(isCheckedOutQuery);
+  return isCheckedOutResults[0].row_count > 0;
 }
 
 const CheckOut = {
@@ -47,6 +46,53 @@ const CheckOut = {
     const queryStr = getQueryStr(args);
     const queryResults = await mysqlDataConnector.pool.query(queryStr);
     return queryResults;
+  },
+
+  checkoutAsset: async (root, args) => {
+    /**
+     * Before performing some mutations, we may want to perform an additional check to make certain that the mutation is a valid request.
+     */
+    const assetIsCheckedOut = await isAssetCheckedOut(args.assetUpc);
+    if (assetIsCheckedOut) {
+      /**
+       * Apollo Server provides an ApolloError class to help format responses.
+       * We can sent a message as well as an error code back to the client letting them know why their mutation was not completed
+       * Since it doesn't make sense to have a single asset be checked out from the library by different people at the same time, we return an error.
+       */
+      return new ApolloError(errors.assetDuplicateCheckout.message, errors.assetDuplicateCheckout.code);
+    }
+
+    /**
+     * Here we create the query that will update our database and return the results
+     * Different databases have different mechanisms for returning results of the previous insert query.
+     * The MySQL driver we are using only returns information about the query, but not information about the data added in the insert query.
+     * For MySQL we will check if the insert query affected any rows and then run another query to fetch the inserted results.
+     */
+    const insertQuery = mysqlDataConnector.format('INSERT INTO checkouts (asset_upc, user_email) VALUES (?, ?);', [args.assetUpc, args.userEmail]);
+    const insertResults = await mysqlDataConnector.pool.query(insertQuery);
+    if (insertResults.affectedRows === 1) {
+      const newRowQuery = mysqlDataConnector.format(`SELECT ${mappedQueryFields} FROM checkouts WHERE asset_upc=? AND checkin_date IS NULL`, args.assetUpc);
+      const queryResults = await mysqlDataConnector.pool.query(newRowQuery);
+      return queryResults[0];
+    }
+
+    /**
+     * If for some reason, the insert query did not affect any rows, we will want to send the client an error.
+     */
+    return new ApolloError(errors.assetCheckoutFailed.message, errors.assetCheckoutFailed.code);
+  },
+
+  checkinAsset: async (root, args) => {
+    const findCheckoutQuery = mysqlDataConnector.format('SELECT row_id FROM checkouts WHERE asset_upc=? and checkin_date IS NULL', args.assetUpc);
+    const checkouts = await mysqlDataConnector.pool.query(findCheckoutQuery);
+    if (checkouts.length === 0) {
+      return new ApolloError(errors.assetNoCheckout.message, errors.assetNoCheckout.code);
+    }
+    const checkInQuery = mysqlDataConnector.format('UPDATE checkouts SET checkin_date = NOW() WHERE row_id=?', checkouts[0].row_id);
+    await mysqlDataConnector.pool.query(checkInQuery);
+    const verifyQuery = mysqlDataConnector.format(`SELECT ${mappedQueryFields} FROM checkouts WHERE row_id=?`, checkouts[0].row_id);
+    const results = await mysqlDataConnector.pool.query(verifyQuery);
+    return results[0];
   },
 };
 
