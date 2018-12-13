@@ -1,7 +1,8 @@
 import { makeExecutableSchema } from 'graphql-tools';
 import merge from 'lodash.merge';
 
-import { resolver as checkoutResolver, typeDef as checkoutTypeDef } from './checkout';
+import checkoutResolver from './checkout/checkout.resolver';
+import checkoutTypeDef from './checkout/checkout.typeDef';
 
 const typeDefs = [
   checkoutTypeDef,
