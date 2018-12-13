@@ -1,4 +1,4 @@
-import { getCheckouts } from './checkout.data-fetchers';
+import { getCheckouts, checkoutAsset, checkinAsset } from './checkout.data-fetchers';
 
 /**
  * To make our resolver code a little easier to follow, we simply map resolver queries to functions
@@ -8,6 +8,12 @@ export default {
   Query: {
     checkouts: getCheckouts,
   },
+
+  Mutation: {
+    checkoutAsset,
+    checkinAsset,
+  },
+
   CheckOut: {
     checkinDate: (checkout) => {
       if (checkout.checkinDate instanceof Date) {
