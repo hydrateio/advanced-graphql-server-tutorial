@@ -4,8 +4,8 @@ const typeDef = /* GraphQL */`
   }
 
   type Mutation {
-    checkoutAsset(assetUpc: String!, userEmail: String!): CheckOut
-    checkinAsset(assetUpc: String!): CheckOut
+    checkoutAsset(assetUpc: String!, userEmail: String!): CheckOut!
+    checkinAsset(assetUpc: String!): CheckOut!
   }
 
   type CheckOut {
