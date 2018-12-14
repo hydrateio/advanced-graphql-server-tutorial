@@ -54,6 +54,24 @@ export async function getCheckoutByAssetUpc(assetUpc, restrictToCurrentlyChecked
   return queryResults;
 }
 
+export async function getCheckoutsByAssetUpcs(assetUpcs, restrictToCurrentlyCheckedOut) {
+  let filter = 'asset_upc IN (?)';
+  if (restrictToCurrentlyCheckedOut) {
+    filter = `${filter} AND checkin_date IS NULL`;
+  }
+  const queryStr = `SELECT ${mappedQueryFields} FROM checkouts WHERE ${filter} ORDER BY checkoutDate DESC`;
+  const query = mysqlDataConnector.format(queryStr, [assetUpcs]);
+  const queryResults = await mysqlDataConnector.pool.query(query);
+  const assetMap = queryResults.reduce((map, result) => {
+    if (!map[result.assetUpc]) {
+      map[result.assetUpc] = [];
+    }
+    map[result.assetUpc].push(result);
+    return map;
+  }, {});
+  return assetUpcs.map(upc => assetMap[upc]);
+}
+
 export async function getCheckoutByPatronEmail(userEmail, restrictToCurrentlyCheckedOut) {
   const queryFilter = { userEmail };
   if (restrictToCurrentlyCheckedOut) {
@@ -62,6 +80,24 @@ export async function getCheckoutByPatronEmail(userEmail, restrictToCurrentlyChe
   const query = `${getQueryStr(queryFilter)} ORDER BY checkoutDate DESC`;
   const queryResults = await mysqlDataConnector.pool.query(query);
   return queryResults;
+}
+
+export async function getCheckoutsByPatronEmails(userEmails, restrictToCurrentlyCheckedOut) {
+  let filter = 'user_email IN (?)';
+  if (restrictToCurrentlyCheckedOut) {
+    filter = `${filter} AND checkin_date IS NULL`;
+  }
+  const queryStr = `SELECT ${mappedQueryFields} FROM checkouts WHERE ${filter} ORDER BY checkoutDate DESC`;
+  const query = mysqlDataConnector.format(queryStr, [userEmails]);
+  const queryResults = await mysqlDataConnector.pool.query(query);
+  const userEmailMap = queryResults.reduce((map, result) => {
+    if (!map[result.userEmail]) {
+      map[result.userEmail] = [];
+    }
+    map[result.userEmail].push(result);
+    return map;
+  }, {});
+  return userEmails.map(email => userEmailMap[email]);
 }
 
 export async function checkoutAsset(root, args) {

@@ -1,5 +1,6 @@
+import DataLoader from 'dataloader';
 import { getBook, getBooks } from './book.data-fetchers';
-import { getCheckoutByAssetUpc } from '../checkout/checkout.data-fetchers';
+import { getCheckoutsByAssetUpcs } from '../checkout/checkout.data-fetchers';
 
 export default {
   Query: {
@@ -8,6 +9,11 @@ export default {
   },
 
   BookCopy: {
-    checkoutHistory: (copy, args) => getCheckoutByAssetUpc(copy.libraryUPC, args.currentCheckoutsOnly),
+    checkoutHistory: (copy, args, context) => {
+      if (!context.getCheckoutsByAssetUpcsDataLoader) {
+        context.getCheckoutsByAssetUpcsDataLoader = new DataLoader(keys => getCheckoutsByAssetUpcs(keys, args.currentCheckoutsOnly));
+      }
+      return context.getCheckoutsByAssetUpcsDataLoader.load(copy.libraryUPC);
+    },
   },
 };
