@@ -1,5 +1,5 @@
 const typeDef = /* GraphQL */`
-  type Query {
+  extend type Query {
     checkouts(userEmail: String, assetUpc: String): [CheckOut]
   }
 
