@@ -14,6 +14,14 @@ const typeDef = /* GraphQL */`
     checkoutDate: String!
     checkinDate: String
   }
+
+  extend type BookCopy {
+    checkoutHistory(currentCheckoutsOnly: Boolean): [CheckOut]
+  }
+  
+  extend type Patron {
+    checkOuts(currentCheckoutsOnly: Boolean): [CheckOut]
+  }
 `;
 
 export default typeDef;

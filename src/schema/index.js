@@ -3,6 +3,10 @@ import merge from 'lodash.merge';
 
 import checkoutResolver from './checkout/checkout.resolver';
 import checkoutTypeDef from './checkout/checkout.typeDef';
+import patronResolver from './patron/patron.resolver';
+import patronTypeDef from './patron/patron.typeDef';
+import bookResolver from './book/book.resolver';
+import bookTypeDef from './book/book.typeDef';
 
 /**
  * Create a base typeDef so other typeDefs can extend them later
@@ -24,10 +28,14 @@ const baseTypeDef = /* GraphQL */`
 const typeDefs = [
   baseTypeDef,
   checkoutTypeDef,
+  patronTypeDef,
+  bookTypeDef,
 ];
 
 const resolvers = merge(
   checkoutResolver,
+  patronResolver,
+  bookResolver,
 );
 
 const schema = makeExecutableSchema({

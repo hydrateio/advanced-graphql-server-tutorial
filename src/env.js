@@ -10,6 +10,11 @@ const environmentVariables = {
   MYSQL_DATABASE: process.env.MYSQL_DATABASE || null,
   MYSQL_CONNECTION_POOL_LIMIT: parseInt(process.env.MYSQL_CONNECTION_POOL_LIMIT, 10) || 10,
   MYSQL_TIMEZONE: process.env.MYSQL_TIMEZONE || 'Z',
+  MONGO_URL: process.env.MONGO_URL,
+  MONGO_DATABASE: process.env.MONGO_DATABASE,
+  MONGO_USER: process.env.MONGO_USER,
+  MONGO_PASSWORD: process.env.MONGO_PASSWORD,
+  MONGO_CONNECTION_POOL_SIZE: process.env.MONGO_CONNECTION_POOL_SIZE ? parseInt(process.env.MONGO_CONNECTION_POOL_SIZE, 10) : 10,
 };
 
 /**

@@ -23,4 +23,12 @@ export default {
     },
     checkoutDate: checkout => checkout.checkoutDate.toISOString(),
   },
+
+  BookCopy: {
+    checkoutHistory: (copy, args) => CheckOut.getCheckoutByAssetUpc(copy.libraryUPC, args.currentCheckoutsOnly),
+  },
+
+  Patron: {
+    checkOuts: (patron, args) => CheckOut.getCheckoutByPatronEmail(patron.email, args.currentCheckoutsOnly),
+  },
 };

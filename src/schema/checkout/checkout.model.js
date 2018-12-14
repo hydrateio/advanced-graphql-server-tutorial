@@ -94,6 +94,26 @@ const CheckOut = {
     const results = await mysqlDataConnector.pool.query(verifyQuery);
     return results[0];
   },
+
+  getCheckoutByAssetUpc: async (assetUpc, restrictToCurrentlyCheckedOut) => {
+    const queryFilter = { assetUpc };
+    if (restrictToCurrentlyCheckedOut) {
+      queryFilter.checkinDate = null;
+    }
+    const query = `${getQueryStr(queryFilter)} ORDER BY checkoutDate DESC`;
+    const queryResults = await mysqlDataConnector.pool.query(query);
+    return queryResults;
+  },
+
+  getCheckoutByPatronEmail: async (userEmail, restrictToCurrentlyCheckedOut) => {
+    const queryFilter = { userEmail };
+    if (restrictToCurrentlyCheckedOut) {
+      queryFilter.checkinDate = null;
+    }
+    const query = `${getQueryStr(queryFilter)} ORDER BY checkoutDate DESC`;
+    const queryResults = await mysqlDataConnector.pool.query(query);
+    return queryResults;
+  },
 };
 
 export default CheckOut;
