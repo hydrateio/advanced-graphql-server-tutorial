@@ -44,6 +44,26 @@ export async function getCheckouts(root, args) {
   return queryResults;
 }
 
+export async function getCheckoutByAssetUpc(assetUpc, restrictToCurrentlyCheckedOut) {
+  const queryFilter = { assetUpc };
+  if (restrictToCurrentlyCheckedOut) {
+    queryFilter.checkinDate = null;
+  }
+  const query = `${getQueryStr(queryFilter)} ORDER BY checkoutDate DESC`;
+  const queryResults = await mysqlDataConnector.pool.query(query);
+  return queryResults;
+}
+
+export async function getCheckoutByPatronEmail(userEmail, restrictToCurrentlyCheckedOut) {
+  const queryFilter = { userEmail };
+  if (restrictToCurrentlyCheckedOut) {
+    queryFilter.checkinDate = null;
+  }
+  const query = `${getQueryStr(queryFilter)} ORDER BY checkoutDate DESC`;
+  const queryResults = await mysqlDataConnector.pool.query(query);
+  return queryResults;
+}
+
 export async function checkoutAsset(root, args) {
   /**
    * Before performing some mutations, we may want to perform an additional check to make certain that the mutation is a valid request.

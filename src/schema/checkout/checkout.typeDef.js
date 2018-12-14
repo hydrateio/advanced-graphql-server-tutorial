@@ -13,6 +13,8 @@ const typeDef = /* GraphQL */`
     assetUpc: String!
     checkoutDate: String!
     checkinDate: String
+    patron: Patron!
+    book: Book!
   }
 `;
 
