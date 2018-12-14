@@ -1,9 +1,9 @@
 const typeDef = /* GraphQL */`
-  type Query {
+  extend type Query {
     checkouts(userEmail: String, assetUpc: String): [CheckOut]
   }
 
-  type Mutation {
+  extend type Mutation {
     checkoutAsset(assetUpc: String!, userEmail: String!): CheckOut!
     checkinAsset(assetUpc: String!): CheckOut!
   }
