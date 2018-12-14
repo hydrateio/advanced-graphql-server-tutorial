@@ -7,6 +7,6 @@ export default {
   },
 
   CheckOut: {
-    patron: checkout => Patron.getPatronByEmail(checkout.userEmail),
+    patron: (checkout, args, context) => context.loaders.patronsByEmails.load(checkout.userEmail),
   },
 };

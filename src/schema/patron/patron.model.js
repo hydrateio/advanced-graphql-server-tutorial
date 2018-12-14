@@ -13,6 +13,19 @@ const Patron = {
     return patron;
   },
 
+  getPatronsByEmails: async (emails) => {
+    const db = await mongoDataConnector.getDb();
+    const patrons = await db.collection('patrons').aggregate([
+      { $match: { email: { $in: emails } } },
+      { $project: projectFieldMapping },
+    ]).toArray();
+    const patronMap = patrons.reduce((map, patron) => {
+      map[patron.email] = patron;
+      return map;
+    }, {});
+    return emails.map(email => patronMap[email]);
+  },
+
   getPatronById: async (id) => {
     const db = await mongoDataConnector.getDb();
     const cursor = await db.collection('patrons').aggregate([

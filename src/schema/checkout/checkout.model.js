@@ -114,6 +114,42 @@ const CheckOut = {
     const queryResults = await mysqlDataConnector.pool.query(query);
     return queryResults;
   },
+
+  getCheckoutsByAssetUpcs: async (assetUpcs, restrictToCurrentlyCheckedOut) => {
+    let filter = 'asset_upc IN (?)';
+    if (restrictToCurrentlyCheckedOut) {
+      filter = `${filter} AND checkin_date IS NULL`;
+    }
+    const queryStr = `SELECT ${mappedQueryFields} FROM checkouts WHERE ${filter} ORDER BY checkoutDate DESC`;
+    const query = mysqlDataConnector.format(queryStr, [assetUpcs]);
+    const queryResults = await mysqlDataConnector.pool.query(query);
+    const assetMap = queryResults.reduce((map, result) => {
+      if (!map[result.assetUpc]) {
+        map[result.assetUpc] = [];
+      }
+      map[result.assetUpc].push(result);
+      return map;
+    }, {});
+    return assetUpcs.map(upc => assetMap[upc]);
+  },
+
+  getCheckoutsByPatronEmails: async (userEmails, restrictToCurrentlyCheckedOut) => {
+    let filter = 'user_email IN (?)';
+    if (restrictToCurrentlyCheckedOut) {
+      filter = `${filter} AND checkin_date IS NULL`;
+    }
+    const queryStr = `SELECT ${mappedQueryFields} FROM checkouts WHERE ${filter} ORDER BY checkoutDate DESC`;
+    const query = mysqlDataConnector.format(queryStr, [userEmails]);
+    const queryResults = await mysqlDataConnector.pool.query(query);
+    const userEmailMap = queryResults.reduce((map, result) => {
+      if (!map[result.userEmail]) {
+        map[result.userEmail] = [];
+      }
+      map[result.userEmail].push(result);
+      return map;
+    }, {});
+    return userEmails.map(email => userEmailMap[email]);
+  },
 };
 
 export default CheckOut;

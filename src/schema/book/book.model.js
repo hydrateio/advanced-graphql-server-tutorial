@@ -31,6 +31,18 @@ const Book = {
     return book ? mongoBookToGraphQLType(book) : null;
   },
 
+  getBooksByCopyLibraryUpcs: async (libraryUpcs) => {
+    const db = await mongoDataConnector.getDb();
+    const books = await db.collection('books').find({ 'copies.libraryUPC': { $in: libraryUpcs } }).toArray();
+    const upcMap = books.reduce((map, book) => {
+      book.copies.forEach((copy) => {
+        map[copy.libraryUPC] = mongoBookToGraphQLType(book);
+      });
+      return map;
+    }, {});
+    return libraryUpcs.map(upc => upcMap[upc]);
+  },
+
   getBook: async (root, args) => {
     if (args.id) {
       return Book.getBookById(args.id);

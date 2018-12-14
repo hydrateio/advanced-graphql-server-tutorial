@@ -2,8 +2,12 @@ import express from 'express';
 import { ApolloServer } from 'apollo-server-express';
 import env from './env';
 import schema from './schema';
+import context from './context';
 
-const server = new ApolloServer({ schema });
+const server = new ApolloServer({
+  schema,
+  context,
+});
 
 const app = express();
 server.applyMiddleware({ app });

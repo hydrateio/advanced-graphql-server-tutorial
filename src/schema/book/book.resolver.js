@@ -7,6 +7,6 @@ export default {
   },
 
   CheckOut: {
-    book: checkout => Book.getBookByCopyLibraryUpc(checkout.assetUpc),
+    book: (checkout, args, context) => context.loaders.booksByCopyLibraryUpcs.load(checkout.assetUpc),
   },
 };

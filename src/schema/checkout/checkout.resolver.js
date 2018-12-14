@@ -25,10 +25,10 @@ export default {
   },
 
   BookCopy: {
-    checkoutHistory: (copy, args) => CheckOut.getCheckoutByAssetUpc(copy.libraryUPC, args.currentCheckoutsOnly),
+    checkoutHistory: (copy, args, context) => context.loaders.checkoutsByAssetUpcs.load({ key: copy.libraryUPC, args }),
   },
 
   Patron: {
-    checkOuts: (patron, args) => CheckOut.getCheckoutByPatronEmail(patron.email, args.currentCheckoutsOnly),
+    checkOuts: (patron, args, context) => context.loaders.checkoutsByPatronEmails.load({ key: patron.email, args }),
   },
 };
