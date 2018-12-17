@@ -1,7 +1,4 @@
-import DataLoader from 'dataloader';
 import { getCheckouts, checkoutAsset, checkinAsset } from './checkout.data-fetchers';
-import { getBooksByCopyLibraryUpcs } from '../book/book.data-fetchers';
-import { getPatronsByEmails } from '../patron/patron.data-fetchers';
 
 /**
  * To make our resolver code a little easier to follow, we simply map resolver queries to functions
@@ -25,17 +22,7 @@ export default {
       return null;
     },
     checkoutDate: checkout => checkout.checkoutDate.toISOString(),
-    patron: (checkout, args, context) => {
-      if (!context.getPatronsByEmailsDataLoader) {
-        context.getPatronsByEmailsDataLoader = new DataLoader(keys => getPatronsByEmails(keys));
-      }
-      return context.getPatronsByEmailsDataLoader.load(checkout.userEmail);
-    },
-    book: (checkout, args, context) => {
-      if (!context.getBooksByCopyLibraryUpcsDataLoader) {
-        context.getBooksByCopyLibraryUpcsDataLoader = new DataLoader(keys => getBooksByCopyLibraryUpcs(keys));
-      }
-      return context.getBooksByCopyLibraryUpcsDataLoader.load(checkout.assetUpc);
-    },
+    patron: (checkout, args, context) => context.loaders.patronsByEmails.load(checkout.userEmail),
+    book: (checkout, args, context) => context.loaders.booksByCopyLibraryUpcs.loader(checkout.assetUpc),
   },
 };
