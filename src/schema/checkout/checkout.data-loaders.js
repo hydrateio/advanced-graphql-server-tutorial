@@ -1,11 +1,21 @@
 import DataLoader from 'dataloader';
-import { getBooksByCopyLibraryUpcs } from '../book/book.data-fetchers';
-import { getPatronsByEmails } from '../patron/patron.data-fetchers';
+import { loaderOptions, mergeKeys } from '../utils';
+import { getCheckoutsByAssetUpcs, getCheckoutsByPatronEmails } from './checkout.data-fetchers';
 
-const booksByCopyLibraryUpcs = () => new DataLoader(keys => getBooksByCopyLibraryUpcs(keys));
-const patronsByEmails = () => new DataLoader(keys => getPatronsByEmails(keys));
+const getCheckoutsByAssetUpcsLoaderFn = async (data) => {
+  const { keys, args } = mergeKeys(data);
+  const patrons = await getCheckoutsByAssetUpcs(keys, args.currentCheckoutsOnly);
+  return patrons;
+};
+
+
+const getCheckoutsByPatronEmailsLoaderFn = async (data) => {
+  const { keys, args } = mergeKeys(data);
+  const patrons = await getCheckoutsByPatronEmails(keys, args.currentCheckoutsOnly);
+  return patrons;
+};
 
 export default () => ({
-  booksByCopyLibraryUpcs: booksByCopyLibraryUpcs(),
-  patronsByEmails: patronsByEmails(),
+  checkoutsByPatronEmails: new DataLoader(keys => getCheckoutsByPatronEmailsLoaderFn(keys), loaderOptions),
+  checkoutsByAssetUpcs: new DataLoader(keys => getCheckoutsByAssetUpcsLoaderFn(keys), loaderOptions),
 });
