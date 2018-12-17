@@ -8,7 +8,6 @@ const getCheckoutsByAssetUpcsLoaderFn = async (data) => {
   return patrons;
 };
 
-
 const getCheckoutsByPatronEmailsLoaderFn = async (data) => {
   const { keys, args } = mergeKeys(data);
   const patrons = await getCheckoutsByPatronEmails(keys, args.currentCheckoutsOnly);

@@ -7,6 +7,6 @@ export default {
   },
 
   BookCopy: {
-    checkoutHistory: (copy, args, context) => context.loaders.checkoutsByAssetUpcs.load(copy.libraryUPC, args),
+    checkoutHistory: (copy, args, context) => context.loaders.checkoutsByAssetUpcs.load({ key: copy.libraryUPC, args }),
   },
 };
