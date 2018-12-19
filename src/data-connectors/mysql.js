@@ -18,6 +18,7 @@ class MySQLDataConnector {
       user: env.MYSQL_USER,
       password: env.MYSQL_PASSWORD,
       database: env.MYSQL_DATABASE,
+      timezone: env.MYSQL_TIMEZONE,
     };
 
     this.currentConnections = [];
@@ -39,6 +40,8 @@ class MySQLDataConnector {
     });
 
     this.format = mysql.format;
+    this.escapeId = mysql.escapeId;
+    this.escape = mysql.escape;
   }
 
   get query() {
