@@ -8,7 +8,8 @@ const environmentVariables = {
   MYSQL_USER: process.env.MYSQL_USER || null,
   MYSQL_PASSWORD: process.env.MYSQL_PASSWORD || null,
   MYSQL_DATABASE: process.env.MYSQL_DATABASE || null,
-  MYSQL_CONNECTION_POOL_LIMIT: process.env.MYSQL_CONNECTION_POOL_LIMIT || 10,
+  MYSQL_CONNECTION_POOL_LIMIT: parseInt(process.env.MYSQL_CONNECTION_POOL_LIMIT, 10) || 10,
+  MYSQL_TIMEZONE: process.env.MYSQL_TIMEZONE || 'Z',
 };
 
 /**
