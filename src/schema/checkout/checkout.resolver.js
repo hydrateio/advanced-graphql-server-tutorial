@@ -7,6 +7,7 @@ import CheckOut from './checkout.model';
 export default {
   Query: {
     checkouts: CheckOut.getCheckouts,
+    checkoutFeed: CheckOut.getCheckoutFeed,
   },
 
   Mutation: {

@@ -1,4 +1,5 @@
 import * as util from 'util';
+import * as crypto from 'crypto';
 
 export const loaderOptions = {
   cacheKeyFn: key => util.inspect(key),
@@ -12,3 +13,10 @@ export const mergeKeys = arr => arr.reduce(
   },
   { keys: [], args: {} },
 );
+
+export const getQueryId = (args, user) => {
+  const hash = crypto.createHash('md5');
+  hash.update(util.inspect(user));
+  hash.update(util.inspect(args));
+  return hash.digest('hex');
+};

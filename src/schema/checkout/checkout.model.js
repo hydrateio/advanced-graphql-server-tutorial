@@ -1,6 +1,8 @@
 import { ApolloError } from 'apollo-server-express';
 import mysqlDataConnector from '../../data-connectors/mysql';
 import { checkoutTableVariablesMap, errors, mappedQueryFields } from './checkout.constants';
+import { getQueryId } from '../utils';
+import { isCacheAvailable, queryCache, cacheResults } from '../cache';
 
 /**
  * Writing highly optimized database query strings from user input can become heavy on business logic.
@@ -9,27 +11,47 @@ import { checkoutTableVariablesMap, errors, mappedQueryFields } from './checkout
  * coverage.
  */
 function getQueryStr(args) {
-  let queryStr = `select ${mappedQueryFields} from checkouts`;
+  const queryStr = `select ${mappedQueryFields} from checkouts`;
+  const filterKeys = Object.keys(checkoutTableVariablesMap);
 
-  /**
-   * The args variable are the arguments passed by the user to the GraphQL server.
-   * When arguments are passed, we'll want to modify our database query to return only the requested results.
-   * Any time user arguments are passed to a database query, they must first be sanitized.
-   * Different database drivers have different methods for sanitizing input, but for the MySQL library that we are using, the `format` method is used.
-   * To ensure the ordering of arguments in the where clause match up with the passed values, we can use Object.entries().
-   */
-  const argEntries = Object.entries(args);
-  if (argEntries.length > 0) {
-    const filters = argEntries.map((arg) => {
-      if (arg[1] === null) {
-        return `${checkoutTableVariablesMap[arg[0]]} IS NULL`;
-      }
-      return `${checkoutTableVariablesMap[arg[0]]}=?`;
-    });
-    const whereClause = `WHERE ${(filters).join(' AND ')}`;
-    queryStr = mysqlDataConnector.format(`${queryStr} ${whereClause}`, argEntries.map(arg => arg[1]));
-  }
-  return queryStr;
+  const filters = [];
+  let sorters = [{ field: 'checkoutDate', direction: 'ASC' }];
+  let limit;
+  Object.entries(args).forEach((arg) => {
+    const [key, value] = arg;
+    switch (key) {
+      case 'next':
+        limit = parseInt(value, 10);
+        break;
+      case 'cursor':
+        filters.push({
+          key: 'checkout_date',
+          comparison: args.sort && args.sort[0].field === 'checkoutDate' && args.sort[0].direction === 'DESC' ? '<' : '>',
+          value: `STR_TO_DATE(${mysqlDataConnector.escape(value)}, '%Y-%m-%dT%T')`,
+        });
+        break;
+      case 'sort':
+        sorters = value.map(sort => ({
+          field: mysqlDataConnector.escapeId(sort.field),
+          direction: sort.direction === 'DESC' ? 'DESC' : 'ASC',
+        }));
+        break;
+      default:
+        if (filterKeys.includes(key)) {
+          filters.push({
+            key: mysqlDataConnector.escapeId(checkoutTableVariablesMap[key]),
+            comparison: value === null ? '' : '=',
+            value: value === null ? ' IS NULL' : mysqlDataConnector.escape(value),
+          });
+        }
+        break;
+    }
+  });
+
+  const filterStr = filters.length > 0 ? `WHERE ${filters.map(filter => `${filter.key}${filter.comparison}${filter.value}`).join(' AND ')}` : '';
+  const orderByStr = `ORDER BY ${sorters.map(sort => `${sort.field} ${sort.direction}`).join(', ')}`;
+  const limitStr = limit && !Number.isNaN(limit) ? `LIMIT ${limit}` : '';
+  return `${queryStr} ${filterStr} ${orderByStr} ${limitStr}`;
 }
 
 async function isAssetCheckedOut(assetUpc) {
@@ -39,12 +61,10 @@ async function isAssetCheckedOut(assetUpc) {
 }
 
 const CheckOut = {
-  /**
-   * With our query string builder abstracted, our resolver method becomes much more manageable.
-   */
+
   getCheckouts: async (root, args) => {
-    const queryStr = getQueryStr(args);
-    const queryResults = await mysqlDataConnector.pool.query(queryStr);
+    const query = getQueryStr(args);
+    const queryResults = await mysqlDataConnector.pool.query(query);
     return queryResults;
   },
 
@@ -113,6 +133,38 @@ const CheckOut = {
     const query = `${getQueryStr(queryFilter)} ORDER BY checkoutDate DESC`;
     const queryResults = await mysqlDataConnector.pool.query(query);
     return queryResults;
+  },
+
+  getCheckoutFeed: async (root, args) => {
+    const buildQueryArgs = { ...args };
+    if (buildQueryArgs.next) {
+      delete buildQueryArgs.next;
+    }
+    if (buildQueryArgs.cursor) {
+      delete buildQueryArgs.cursor;
+    }
+    const user = 'REPLACE WITH WITH USER FROM CONTEXT IN LATER LESSON';
+    const queryId = getQueryId(buildQueryArgs, user);
+    const hasCache = await isCacheAvailable(queryId);
+    if (!hasCache) {
+      const query = getQueryStr(buildQueryArgs);
+      const queryResults = await mysqlDataConnector.pool.query(query);
+      await cacheResults(queryId, queryResults.map(row => ({ ...row, id: row.id.toString() })));
+    }
+    const response = await queryCache(queryId, args.cursor, args.next);
+    const { entries, pageInfo } = response;
+    return {
+      pageInfo: {
+        queryId,
+        currentCursor: args.cursor,
+        startEntryIndex: pageInfo.startEntryIndex,
+        endEntryIndex: pageInfo.startEntryIndex + entries.length - 1,
+        totalEntries: pageInfo.totalEntries,
+        hasPreviousPage: pageInfo.startEntryIndex > 0,
+        hasNextPage: pageInfo.startEntryIndex + entries.length < pageInfo.totalEntries,
+      },
+      entries,
+    };
   },
 
   getCheckoutsByAssetUpcs: async (assetUpcs, restrictToCurrentlyCheckedOut) => {
