@@ -22,6 +22,12 @@ const typeDef = /* GraphQL */`
     checkinAsset(assetUpc: String!): CheckOut!
   }
 
+  extend type Subscription {
+    checkoutStatusUpdate: CheckOut
+    checkout: CheckOut
+    checkin: CheckOut
+  }
+
   type CheckOut {
     id: ID!
     userEmail: String!

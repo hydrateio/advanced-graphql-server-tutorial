@@ -68,7 +68,7 @@ const CheckOut = {
     return queryResults;
   },
 
-  checkoutAsset: async (root, args) => {
+  checkoutAsset: async (root, args, context) => {
     /**
      * Before performing some mutations, we may want to perform an additional check to make certain that the mutation is a valid request.
      */
@@ -93,6 +93,7 @@ const CheckOut = {
     if (insertResults.affectedRows === 1) {
       const newRowQuery = mysqlDataConnector.format(`SELECT ${mappedQueryFields} FROM checkouts WHERE asset_upc=? AND checkin_date IS NULL`, args.assetUpc);
       const queryResults = await mysqlDataConnector.pool.query(newRowQuery);
+      context.pubsub.kafka.publish('checkout', queryResults[0]);
       return queryResults[0];
     }
 
@@ -102,7 +103,7 @@ const CheckOut = {
     return new ApolloError(errors.assetCheckoutFailed.message, errors.assetCheckoutFailed.code);
   },
 
-  checkinAsset: async (root, args) => {
+  checkinAsset: async (root, args, context) => {
     const findCheckoutQuery = mysqlDataConnector.format('SELECT row_id FROM checkouts WHERE asset_upc=? and checkin_date IS NULL', args.assetUpc);
     const checkouts = await mysqlDataConnector.pool.query(findCheckoutQuery);
     if (checkouts.length === 0) {
@@ -112,6 +113,7 @@ const CheckOut = {
     await mysqlDataConnector.pool.query(checkInQuery);
     const verifyQuery = mysqlDataConnector.format(`SELECT ${mappedQueryFields} FROM checkouts WHERE row_id=?`, checkouts[0].row_id);
     const results = await mysqlDataConnector.pool.query(verifyQuery);
+    context.pubsub.kafka.publish('checkin', results[0]);
     return results[0];
   },
 

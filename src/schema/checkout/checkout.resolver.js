@@ -15,14 +15,36 @@ export default {
     checkinAsset: CheckOut.checkinAsset,
   },
 
+  Subscription: {
+    checkoutStatusUpdate: {
+      subscribe: (root, args, context) => context.pubsub.kafka.asyncIterator('checkoutStatusUpdate', ['checkin', 'checkout']),
+    },
+    checkout: {
+      subscribe: (root, args, context) => context.pubsub.kafka.asyncIterator('checkout', ['checkout']),
+    },
+    checkin: {
+      subscribe: (root, args, context) => context.pubsub.kafka.asyncIterator('checkin', ['checkin']),
+    },
+  },
+
   CheckOut: {
     checkinDate: (checkout) => {
-      if (checkout.checkinDate instanceof Date) {
-        return checkout.checkinDate.toISOString();
+      if (checkout.checkinDate) {
+        let { checkinDate } = checkout;
+        if (typeof checkinDate === 'string') {
+          checkinDate = new Date(checkout.checkinDate);
+        }
+        return checkinDate.toISOString();
       }
       return null;
     },
-    checkoutDate: checkout => checkout.checkoutDate.toISOString(),
+    checkoutDate: (checkout) => {
+      let { checkoutDate } = checkout;
+      if (typeof checkoutDate === 'string') {
+        checkoutDate = new Date(checkout.checkoutDate);
+      }
+      return checkoutDate.toISOString();
+    },
   },
 
   BookCopy: {
