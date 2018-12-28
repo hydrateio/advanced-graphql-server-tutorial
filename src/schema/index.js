@@ -8,6 +8,8 @@ import patronTypeDef from './patron/patron.typeDef';
 import bookResolver from './book/book.resolver';
 import bookTypeDef from './book/book.typeDef';
 
+import { directiveTypeDefs, schemaDirectives } from './directives';
+
 /**
  * Create a base typeDef so other typeDefs can extend them later
  * Types cannot be empty, so we'll define something in each type
@@ -30,6 +32,7 @@ const typeDefs = [
   checkoutTypeDef,
   patronTypeDef,
   bookTypeDef,
+  ...directiveTypeDefs,
 ];
 
 const resolvers = merge(
@@ -41,6 +44,7 @@ const resolvers = merge(
 const schema = makeExecutableSchema({
   typeDefs,
   resolvers,
+  schemaDirectives,
 });
 
 export default schema;

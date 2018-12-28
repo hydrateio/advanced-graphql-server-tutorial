@@ -32,14 +32,14 @@ const typeDef = /* GraphQL */`
     id: ID!
     userEmail: String!
     assetUpc: String!
-    checkoutDate: String!
-    checkinDate: String
+    checkoutDate: String! @date
+    checkinDate: String @date
   }
 
   extend type BookCopy {
     checkoutHistory(currentCheckoutsOnly: Boolean): [CheckOut]
   }
-  
+
   extend type Patron {
     checkOuts(currentCheckoutsOnly: Boolean): [CheckOut]
   }

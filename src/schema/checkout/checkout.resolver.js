@@ -27,26 +27,6 @@ export default {
     },
   },
 
-  CheckOut: {
-    checkinDate: (checkout) => {
-      if (checkout.checkinDate) {
-        let { checkinDate } = checkout;
-        if (typeof checkinDate === 'string') {
-          checkinDate = new Date(checkout.checkinDate);
-        }
-        return checkinDate.toISOString();
-      }
-      return null;
-    },
-    checkoutDate: (checkout) => {
-      let { checkoutDate } = checkout;
-      if (typeof checkoutDate === 'string') {
-        checkoutDate = new Date(checkout.checkoutDate);
-      }
-      return checkoutDate.toISOString();
-    },
-  },
-
   BookCopy: {
     checkoutHistory: (copy, args, context) => context.loaders.checkoutsByAssetUpcs.load({ key: copy.libraryUPC, args }),
   },
