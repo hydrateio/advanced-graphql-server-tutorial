@@ -51,6 +51,13 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     depends_on:
       - zoo1
+  
+  jwt:
+    build: ./JWTService
+    ports:
+      - 4080:4080
+    environment:
+      - 'SERVER_PORT=4080'
 
 networks:
   default:
