@@ -5,7 +5,7 @@ const typeDef = /* GraphQL */`
       assetUpc: String
       cursor: String
       next: Int
-    ): [CheckOut]
+    ): [CheckOut] @auth(requires: USER)
 
     checkoutFeed(
       userEmail: String
@@ -18,8 +18,12 @@ const typeDef = /* GraphQL */`
   }
 
   extend type Mutation {
-    checkoutAsset(assetUpc: String!, userEmail: String!): CheckOut!
-    checkinAsset(assetUpc: String!): CheckOut!
+
+    "Check an asset out of the library. User must have role USER"
+    checkoutAsset(assetUpc: String!, userEmail: String!): CheckOut! @auth(requires: USER)
+
+    "Check an asset back into the library. User must have role LIBRARIAN"
+    checkinAsset(assetUpc: String!): CheckOut! @auth(requires: LIBRARIAN)
   }
 
   extend type Subscription {
