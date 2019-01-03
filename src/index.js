@@ -4,11 +4,23 @@ import { ApolloServer } from 'apollo-server-express';
 import env from './env';
 import schema from './schema';
 import context from './context';
+import { authErrorHandler, authMiddleware, getUserFromToken } from './middleware';
 
 const app = express();
+app.use(authMiddleware, authErrorHandler);
+
 const server = new ApolloServer({
   schema,
   context,
+  subscriptions: {
+    onConnect: async (connectionParams) => {
+      if (connectionParams.authToken) {
+        const currentUser = await getUserFromToken(connectionParams.authToken);
+        return { currentUser };
+      }
+      return {};
+    },
+  },
 });
 
 server.applyMiddleware({ app });

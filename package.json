@@ -13,7 +13,7 @@
     "start": "node --icu-data-dir=./node_modules/full-icu dist/index.js",
     "watch": "nodemon --icu-data-dir=./node_modules/full-icu -r @babel/register -w src -e js src/index.js",
     "debug": "nodemon --icu-data-dir=./node_modules/full-icu -r @babel/register --inspect=127.0.0.1:9228 -w src -e js ./src/index.js",
-    "data-start": "pushd data-sources && docker-compose up -d",
+    "data-start": "pushd data-sources && docker-compose up --build -d",
     "data-stop": "pushd data-sources && docker-compose down",
     "data-reset": "npm run data-stop && rimraf data-sources/mysql/db/* && rimraf data-sources/mongodb/db/*"
   },
@@ -26,10 +26,12 @@
     "graphql": "14.0.2",
     "graphql-tools": "4.0.3",
     "iterall": "1.2.2",
+    "jsonwebtoken": "8.4.0",
     "lodash.merge": "4.6.1",
     "luxon": "1.8.3",
     "mongodb": "3.1.10",
     "mysql": "2.16.0",
+    "node-fetch": "2.3.0",
     "node-rdkafka": "2.5.1",
     "uuid": "3.3.2"
   },

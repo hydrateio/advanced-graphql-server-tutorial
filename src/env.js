@@ -16,6 +16,7 @@ const environmentVariables = {
   MONGO_PASSWORD: process.env.MONGO_PASSWORD,
   MONGO_CONNECTION_POOL_SIZE: process.env.MONGO_CONNECTION_POOL_SIZE ? parseInt(process.env.MONGO_CONNECTION_POOL_SIZE, 10) : 10,
   KAFKA_BROKERS: process.env.KAFKA_BROKERS || null,
+  PUBLIC_JWT_KEY_URL: process.env.PUBLIC_JWT_KEY_URL || null,
 };
 
 /**
