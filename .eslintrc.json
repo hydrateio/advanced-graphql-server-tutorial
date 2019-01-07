@@ -3,6 +3,11 @@
     "rules": {
         "no-restricted-syntax": "off",
         "max-len": ["error", 160],
-        "no-console": "off"
+        "no-console": "off",
+        "import/prefer-default-export": "off",
+        "no-underscore-dangle": "off",
+        "no-param-reassign": "off",
+        "object-curly-newline": "off",
+        "class-methods-use-this": "off"
     }
 }
