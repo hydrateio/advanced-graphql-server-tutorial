@@ -51,7 +51,7 @@ class MySQLDataConnector {
   async closeAllConnections(retryAttempts = 0) {
     if (this.currentConnections.length > 0 && retryAttempts < 5) {
       console.log(`Waiting for ${this.currentConnections.length} MySQL connections to complete queries.`);
-      setTimeout(this.closeAllConnection(retryAttempts + 1), 500);
+      setTimeout(this.closeAllConnections(retryAttempts + 1), 500);
     } else {
       await this.pool.end();
       console.log('all mysql connections closed');
