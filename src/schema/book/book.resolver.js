@@ -1,13 +1,12 @@
-import { getBook, getBooks } from './book.data-fetchers';
-import { getCheckoutByAssetUpc } from '../checkout/checkout.data-fetchers';
+import Book from './book.model';
 
 export default {
   Query: {
-    book: getBook,
-    books: getBooks,
+    book: Book.getBook,
+    books: Book.getBooks,
   },
 
-  BookCopy: {
-    checkoutHistory: (copy, args) => getCheckoutByAssetUpc(copy.libraryUPC, args.currentCheckoutsOnly),
+  CheckOut: {
+    book: checkout => Book.getBookByCopyLibraryUpc(checkout.assetUpc),
   },
 };
