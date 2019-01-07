@@ -1,5 +1,6 @@
 import express from 'express';
 import { ApolloServer, gql } from 'apollo-server-express';
+import env from './env';
 
 const checkouts = [
   {
@@ -115,4 +116,4 @@ const app = express();
 server.applyMiddleware({ app });
 
 // eslint-disable-next-line no-console
-app.listen({ port: 4000 }, () => console.log(`🚀 Server ready at http://localhost:4000${server.graphqlPath}`));
+app.listen({ port: env.GRAPHQL_SERVER_PORT }, () => console.log(`🚀 Server ready at http://localhost:${env.GRAPHQL_SERVER_PORT}${server.graphqlPath}`));
