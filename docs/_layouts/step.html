@@ -1,0 +1,36 @@
+---
+layout: default
+---
+
+<!DOCTYPE html>
+<html>
+<head>
+	<link href="{{ site.baseurl}}/assets/prism.css" rel="stylesheet" />
+	<style>
+		code {
+			border: unset;
+		}
+		code > mark {
+			background-color: transparent;
+			border: 1px solid #BBBBBB;
+			color: inherit;
+			padding: 1px;
+		}
+		h4, .text-delta {
+			font-weight: 700;
+		}
+	</style>
+</head>
+<body>
+	{{content}}
+	<script src="{{ site.baseurl}}/assets/prism.js"></script>
+	<script>
+			Prism.plugins.NormalizeWhitespace.setDefaults({
+				'remove-trailing': true,
+				'remove-indent': true,
+				'left-trim': true,
+				'right-trim': true
+			});
+	</script>
+</body>
+</html>
