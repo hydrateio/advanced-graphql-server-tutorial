@@ -1,4 +1,4 @@
-import { getCheckouts, checkoutAsset, checkinAsset } from './checkout.data-fetchers';
+import CheckOut from './checkout.model';
 
 /**
  * To make our resolver code a little easier to follow, we simply map resolver queries to functions
@@ -6,12 +6,12 @@ import { getCheckouts, checkoutAsset, checkinAsset } from './checkout.data-fetch
  */
 export default {
   Query: {
-    checkouts: getCheckouts,
+    checkouts: CheckOut.getCheckouts,
   },
 
   Mutation: {
-    checkoutAsset,
-    checkinAsset,
+    checkoutAsset: CheckOut.checkoutAsset,
+    checkinAsset: CheckOut.checkinAsset,
   },
 
   CheckOut: {
@@ -22,7 +22,13 @@ export default {
       return null;
     },
     checkoutDate: checkout => checkout.checkoutDate.toISOString(),
-    patron: (checkout, args, context) => context.loaders.patronsByEmails.load(checkout.userEmail),
-    book: (checkout, args, context) => context.loaders.booksByCopyLibraryUpcs.loader(checkout.assetUpc),
+  },
+
+  BookCopy: {
+    checkoutHistory: (copy, args) => CheckOut.getCheckoutByAssetUpc(copy.libraryUPC, args.currentCheckoutsOnly),
+  },
+
+  Patron: {
+    checkOuts: (patron, args) => CheckOut.getCheckoutByPatronEmail(patron.email, args.currentCheckoutsOnly),
   },
 };

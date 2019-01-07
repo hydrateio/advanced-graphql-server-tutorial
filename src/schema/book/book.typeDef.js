@@ -18,13 +18,16 @@ const typeDef = /* GraphQL */`
   type BookCopy {
     libraryUPC: String!
     condition: BookCondition!
-    checkoutHistory(currentCheckoutsOnly: Boolean): [CheckOut]
   }
 
   enum BookCondition {
     good
     fair
     damaged
+  }
+
+  extend type CheckOut {
+    book: Book!
   }
 `;
 

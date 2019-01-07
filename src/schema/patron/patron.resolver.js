@@ -1,12 +1,12 @@
-import { getPatron, getPatrons } from './patron.data-fetchers';
+import Patron from './patron.model';
 
 export default {
   Query: {
-    patron: getPatron,
-    patrons: getPatrons,
+    patron: Patron.getPatron,
+    patrons: Patron.getPatrons,
   },
 
-  Patron: {
-    checkOuts: (patron, args, context) => context.loaders.checkoutsByPatronEmails.load({ key: patron.email, args }),
+  CheckOut: {
+    patron: checkout => Patron.getPatronByEmail(checkout.userEmail),
   },
 };

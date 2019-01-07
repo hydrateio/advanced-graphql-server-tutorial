@@ -11,7 +11,10 @@ const typeDef = /* GraphQL */`
     lastName: String!
     email: String!
     phoneCell: String!
-    checkOuts(currentCheckoutsOnly: Boolean): [CheckOut]
+  }
+  
+  extend type CheckOut {
+    patron: Patron!
   }
 `;
 

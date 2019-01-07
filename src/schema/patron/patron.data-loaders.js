@@ -1,6 +1,6 @@
 import DataLoader from 'dataloader';
-import { getPatronsByEmails } from './patron.data-fetchers';
+import Patron from './patron.model';
 
 export default () => ({
-  patronsByEmails: new DataLoader(keys => getPatronsByEmails(keys)),
+  patronsByEmails: new DataLoader(keys => Patron.getPatronsByEmails(keys)),
 });

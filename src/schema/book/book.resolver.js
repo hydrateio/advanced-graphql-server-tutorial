@@ -1,12 +1,12 @@
-import { getBook, getBooks } from './book.data-fetchers';
+import Book from './book.model';
 
 export default {
   Query: {
-    book: getBook,
-    books: getBooks,
+    book: Book.getBook,
+    books: Book.getBooks,
   },
 
-  BookCopy: {
-    checkoutHistory: (copy, args, context) => context.loaders.checkoutsByAssetUpcs.load({ key: copy.libraryUPC, args }),
+  CheckOut: {
+    book: checkout => Book.getBookByCopyLibraryUpc(checkout.assetUpc),
   },
 };

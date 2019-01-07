@@ -1,16 +1,16 @@
 import DataLoader from 'dataloader';
 import { loaderOptions, mergeKeys } from '../utils';
-import { getCheckoutsByAssetUpcs, getCheckoutsByPatronEmails } from './checkout.data-fetchers';
+import CheckOut from './checkout.model';
 
 const getCheckoutsByAssetUpcsLoaderFn = async (data) => {
   const { keys, args } = mergeKeys(data);
-  const patrons = await getCheckoutsByAssetUpcs(keys, args.currentCheckoutsOnly);
+  const patrons = await CheckOut.getCheckoutsByAssetUpcs(keys, args.currentCheckoutsOnly);
   return patrons;
 };
 
 const getCheckoutsByPatronEmailsLoaderFn = async (data) => {
   const { keys, args } = mergeKeys(data);
-  const patrons = await getCheckoutsByPatronEmails(keys, args.currentCheckoutsOnly);
+  const patrons = await CheckOut.getCheckoutsByPatronEmails(keys, args.currentCheckoutsOnly);
   return patrons;
 };
 

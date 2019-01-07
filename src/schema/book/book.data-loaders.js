@@ -1,6 +1,6 @@
 import DataLoader from 'dataloader';
-import { getBooksByCopyLibraryUpcs } from './book.data-fetchers';
+import Book from './book.model';
 
 export default () => ({
-  booksByCopyLibraryUpcs: new DataLoader(keys => getBooksByCopyLibraryUpcs(keys)),
+  booksByCopyLibraryUpcs: new DataLoader(keys => Book.getBooksByCopyLibraryUpcs(keys)),
 });

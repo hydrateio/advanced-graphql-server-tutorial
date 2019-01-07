@@ -6,6 +6,8 @@
         "no-console": "off",
         "import/prefer-default-export": "off",
         "no-underscore-dangle": "off",
-        "no-param-reassign": "off"
+        "no-param-reassign": "off",
+        "object-curly-newline": "off",
+        "class-methods-use-this": "off"
     }
 }
