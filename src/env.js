@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const environmentVariables = {
+  GRAPHQL_SERVER_PORT: process.env.GRAPHQL_SERVER_PORT || null,
   MYSQL_HOST: process.env.MYSQL_HOST || null,
   MYSQL_USER: process.env.MYSQL_USER || null,
   MYSQL_PASSWORD: process.env.MYSQL_PASSWORD || null,
