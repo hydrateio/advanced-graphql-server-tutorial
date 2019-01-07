@@ -1,4 +1,4 @@
-import { getCheckouts } from './checkout.data-fetchers';
+import CheckOut from './checkout.model';
 
 /**
  * To make our resolver code a little easier to follow, we simply map resolver queries to functions
@@ -6,7 +6,7 @@ import { getCheckouts } from './checkout.data-fetchers';
  */
 export default {
   Query: {
-    checkouts: getCheckouts,
+    checkouts: CheckOut.getCheckouts,
   },
   CheckOut: {
     checkinDate: (checkout) => {

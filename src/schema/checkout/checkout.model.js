@@ -39,11 +39,15 @@ function getQueryStr(args) {
   return queryStr;
 }
 
-/**
- * With our query string builder abstracted, our resolver method becomes much more manageable.
- */
-export async function getCheckouts(root, args) {
-  const queryStr = getQueryStr(args);
-  const queryResults = await mysqlDataConnector.pool.query(queryStr);
-  return queryResults;
-}
+const CheckOut = {
+  /**
+   * With our query string builder abstracted, our resolver method becomes much more manageable.
+   */
+  getCheckouts: async (root, args) => {
+    const queryStr = getQueryStr(args);
+    const queryResults = await mysqlDataConnector.pool.query(queryStr);
+    return queryResults;
+  },
+};
+
+export default CheckOut;
