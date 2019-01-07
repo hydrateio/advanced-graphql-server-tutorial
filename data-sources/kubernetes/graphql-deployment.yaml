@@ -1,0 +1,58 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: graphql
+  name: graphql
+spec:
+  replicas: 5
+  strategy:
+    type: "RollingUpdate"
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: graphql
+    spec:
+      containers:
+      - env:
+        - name: GRAPHQL_SERVER_PORT
+          value: "4000"
+        - name: KAFKA_BROKERS
+          value: kafka-service:19092
+        - name: MONGO_CONNECTION_POOL_SIZE
+          value: "10"
+        - name: MONGO_DATABASE
+          value: central-library
+        - name: MONGO_PASSWORD
+          value: graphqlpw
+        - name: MONGO_URL
+          value: mongodb://mongo:27017
+        - name: MONGO_USER
+          value: graphql
+        - name: MYSQL_CONNECTION_POOL_LIMIT
+          value: "10"
+        - name: MYSQL_DATABASE
+          value: central-library
+        - name: MYSQL_HOST
+          value: mysql
+        - name: MYSQL_PASSWORD
+          value: graphqlpw
+        - name: MYSQL_TIMEZONE
+          value: Z
+        - name: MYSQL_USER
+          value: graphql
+        - name: NODE_ENV
+          value: developent
+        - name: PUBLIC_JWT_KEY_URL
+          value: http://jwt:4080/publickey
+        image: graphql-tutorial:1.1.6
+        imagePullPolicy: Never
+        name: graphql
+        resources: {}
+      restartPolicy: Always
+status: {}

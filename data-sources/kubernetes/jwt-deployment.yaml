@@ -1,0 +1,28 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: jwt
+  name: jwt
+spec:
+  replicas: 1
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: jwt
+    spec:
+      containers:
+      - env:
+        - name: SERVER_PORT
+          value: "4080"
+        image: dev-jwt-service
+        imagePullPolicy: Never
+        name: jwt
+        ports:
+        - containerPort: 4080
+        resources: {}
+      restartPolicy: Always
+status: {}
