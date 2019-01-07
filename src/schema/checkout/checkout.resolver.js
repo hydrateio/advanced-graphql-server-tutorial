@@ -8,4 +8,13 @@ export default {
   Query: {
     checkouts: CheckOut.getCheckouts,
   },
+  CheckOut: {
+    checkinDate: (checkout) => {
+      if (checkout.checkinDate instanceof Date) {
+        return checkout.checkinDate.toISOString();
+      }
+      return null;
+    },
+    checkoutDate: checkout => checkout.checkoutDate.toISOString(),
+  },
 };
