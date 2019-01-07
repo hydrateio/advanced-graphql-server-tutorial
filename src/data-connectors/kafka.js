@@ -12,7 +12,9 @@ export class KafkaPubSub {
     this.subscriptionName = null;
     this.subscribedTopics = [];
     this.producer = null;
+    this.producerIsReady = false;
     this.consumer = null;
+    this.consumerIsReady = false;
   }
 
   async publish(topic, message) {
@@ -71,18 +73,24 @@ export class KafkaPubSub {
   }
 
   async getProducer() {
-    this.producer = this.producer || new Kafka.Producer(this.kafkaGlobalConfig);
-    if (!this.producer.isConnected()) {
+    if (!this.producer) {
+      this.producer = new Kafka.Producer(this.kafkaGlobalConfig);
       this.producer.connect();
+      this.producer.on('ready', () => {
+        this.producerIsReady = true;
+      });
     }
     await this.waitFor('producer');
     return this.producer;
   }
 
   async getConsumer() {
-    this.consumer = this.consumer || new Kafka.KafkaConsumer(this.kafkaGlobalConfig);
-    if (!this.consumer.isConnected()) {
+    if (!this.consumer) {
+      this.consumer = new Kafka.KafkaConsumer(this.kafkaGlobalConfig);
       this.consumer.connect();
+      this.consumer.on('ready', () => {
+        this.consumerIsReady = true;
+      });
     }
     await this.waitFor('consumer');
     return this.consumer;
@@ -91,7 +99,7 @@ export class KafkaPubSub {
   waitFor(item) {
     return new Promise((resolve) => {
       const checkConnected = () => {
-        if (this[item] && this[item].isConnected()) {
+        if (this[`${item}IsReady`]) {
           resolve();
         } else {
           setTimeout(() => checkConnected(), 100);
