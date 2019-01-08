@@ -82,3 +82,9 @@ This project uses [babel](https://babeljs.io/) to allow for ES6 module syntax us
 
 This project uses [apollo-server-express](https://www.npmjs.com/package/apollo-server-express) to provide convenient implementation of the GraphQL server spec
 and to easily add a [GraphQL Playground](https://github.com/prisma/graphql-playground) client for development purposes.
+
+## Contributing
+
+If you have suggestions for changes, improvements or find an error in the tutorial we welcome contributions. See the
+[CONTRIBUTING](.github/CONTRIBUTING.md) guide for info. It's also best in most cases
+to open an issue before submitting a PR so any change can be discussed and referenced for further learning.
