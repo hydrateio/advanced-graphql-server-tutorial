@@ -1,6 +1,7 @@
 # Advanced GraphQL Server Tutorial
 
 ## Overview
+
 In today's world of multiple legacy data sources and APIs living within a single organization, migrating away from those legacy systems can be a challenge.
 Adding a GraphQL server to your company technology stack is an excellent way to provide a migration path forward by replacing multiple API endpoints with
 a single endpoint that efficiently proxies data requests to legacy endpoints while allowing your organizational data APIs to grow and change with your
@@ -10,6 +11,8 @@ This project demonstrates how to implement advanced data resolution techniques f
 
 This project will implement a new GraphQL API for a hypothetical library system. The data sources will include a transactional check-in/check-out database
 running in MySQL along with a NoSQL data source containing various entity details running in MongoDB.
+
+Tutorial site can be found at [https://hydrateio.github.io/advanced-graphql-server-tutorial](https://hydrateio.github.io/advanced-graphql-server-tutorial)
 
 ## Prerequisites
 
