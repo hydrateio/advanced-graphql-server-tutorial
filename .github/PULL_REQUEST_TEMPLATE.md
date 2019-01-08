@@ -5,3 +5,8 @@
 **Closing issues**
 
 Put `closes #XXXX` in your comment to auto-close the issue that your PR fixes (if such).
+
+**Following actions have been taken**
+[ ] Code samples have been updated
+[ ] Tutorial text has been updated
+[ ] Applicable screenshots have been included
