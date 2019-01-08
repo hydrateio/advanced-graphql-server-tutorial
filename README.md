@@ -81,4 +81,4 @@ To use, run the `npm run debug` script and then launch "Attach to debugger" via 
 This project uses [babel](https://babeljs.io/) to allow for ES6 module syntax usage.
 
 This project uses [apollo-server-express](https://www.npmjs.com/package/apollo-server-express) to provide convenient implementation of the GraphQL server spec
-and to easily add a [GraphiQL](https://www.npmjs.com/package/graphiql) client for development purposes. 
+and to easily add a [GraphQL Playground](https://github.com/prisma/graphql-playground) client for development purposes.
