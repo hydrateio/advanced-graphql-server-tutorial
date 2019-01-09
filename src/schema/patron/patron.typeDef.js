@@ -1,7 +1,7 @@
 const typeDef = /* GraphQL */`
   extend type Query {
     "Query for patron information. Must have role LIBRARIAN"
-    patron(email: String, id: ID): Patron @auth(requires: LIBRARIAN, allowSelf: true)
+    patron(email: String @email, id: ID): Patron @auth(requires: LIBRARIAN, allowSelf: true)
     patrons(yearRegistered: Int, limit: Int): [Patron]! @auth(requires: LIBRARIAN)
   }
 
@@ -10,7 +10,7 @@ const typeDef = /* GraphQL */`
     yearRegistered: Int
     firstName: String
     lastName: String
-    email: String @auth(requires: ADMIN, allowSelf: true)
+    email: String @email @auth(requires: ADMIN, allowSelf: true)
     phoneCell: String @auth(requires: ADMIN, allowSelf: true)
   }
   
