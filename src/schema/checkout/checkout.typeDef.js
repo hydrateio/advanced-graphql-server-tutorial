@@ -1,14 +1,14 @@
 const typeDef = /* GraphQL */`
   extend type Query {
     checkouts(
-      userEmail: String
+      userEmail: String @email
       assetUpc: String
       cursor: String
       next: Int
     ): [CheckOut]
 
     checkoutFeed(
-      userEmail: String
+      userEmail: String @email
       assetUpc: String
       sort: [SortObject!]
       cursor: String
@@ -18,7 +18,7 @@ const typeDef = /* GraphQL */`
   }
 
   extend type Mutation {
-    checkoutAsset(assetUpc: String!, userEmail: String!): CheckOut!
+    checkoutAsset(assetUpc: String!, userEmail: String! @email): CheckOut!
     checkinAsset(assetUpc: String!): CheckOut!
   }
 

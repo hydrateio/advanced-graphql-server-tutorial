@@ -1,6 +1,6 @@
 const typeDef = /* GraphQL */`
   extend type Query {
-    patron(email: String, id: ID): Patron
+    patron(email: String @email, id: ID): Patron
     patrons(yearRegistered: Int, limit: Int): [Patron]!
   }
   
@@ -9,7 +9,7 @@ const typeDef = /* GraphQL */`
     yearRegistered: Int!
     firstName: String!
     lastName: String!
-    email: String!
+    email: String @email
     phoneCell: String!
   }
   
