@@ -1,7 +1,10 @@
 import * as Kafka from 'node-rdkafka';
 import { v4 as uuid } from 'uuid';
+import { ApolloError } from 'apollo-server-express';
 import env from '../env';
 import { eventEmitterAsyncIterator } from './event-emitter-to-async-iterator';
+
+const serviceError = new ApolloError('Subscription Service Unavailable', 'SUBSCRIPTION_SYSTEM_ERROR');
 
 export class KafkaPubSub {
   constructor() {
@@ -9,6 +12,7 @@ export class KafkaPubSub {
       'group.id': uuid(),
       'metadata.broker.list': env.KAFKA_BROKERS,
     };
+    this.iterator = null;
     this.subscriptionName = null;
     this.subscribedTopics = [];
     this.producer = null;
@@ -69,15 +73,26 @@ export class KafkaPubSub {
 
   asyncIterator(subscriptionName, topics) {
     this.subscriptionName = subscriptionName;
-    return eventEmitterAsyncIterator(this, topics);
+    this.iterator = eventEmitterAsyncIterator(this, topics);
+    return this.iterator;
   }
 
   async getProducer() {
     if (!this.producer) {
       this.producer = new Kafka.Producer(this.kafkaGlobalConfig);
-      this.producer.connect();
+      this.producer.connect((err) => {
+        if (err) {
+          console.error('connection error:', err);
+        }
+      });
       this.producer.on('ready', () => {
         this.producerIsReady = true;
+      });
+      this.producer.on('event.error', (error) => {
+        console.error('producer event error', error);
+      });
+      this.producer.on('connection.failure', (err) => {
+        console.error('producer connection failure:', err);
       });
     }
     await this.waitFor('producer');
@@ -87,9 +102,22 @@ export class KafkaPubSub {
   async getConsumer() {
     if (!this.consumer) {
       this.consumer = new Kafka.KafkaConsumer(this.kafkaGlobalConfig);
-      this.consumer.connect();
+      this.consumer.connect((err) => {
+        if (err) {
+          console.error('connection error:', err);
+          this.iterator.throw(serviceError);
+        }
+      });
       this.consumer.on('ready', () => {
         this.consumerIsReady = true;
+      });
+      this.consumer.on('event.error', (error) => {
+        console.error('consumer event error', error);
+        this.iterator.throw(serviceError);
+      });
+      this.consumer.on('connection.failure', (err) => {
+        console.error('consumer connection failure:', err);
+        this.iterator.throw(serviceError);
       });
     }
     await this.waitFor('consumer');
