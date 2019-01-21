@@ -1,5 +1,5 @@
 import { SchemaDirectiveVisitor } from 'graphql-tools';
-import { defaultFieldResolver, GraphQLScalarType, GraphQLNonNull } from 'graphql';
+import { defaultFieldResolver, GraphQLScalarType, GraphQLString, GraphQLNonNull } from 'graphql';
 import { ApolloError } from 'apollo-server-express';
 
 export const typeDef = /* GraphQL */`
@@ -57,6 +57,10 @@ class EmailDirective extends SchemaDirectiveVisitor {
     }
   }
 }
+
+export const emailResolvers = {
+  Email: new EmailType(GraphQLString),
+};
 
 export const emailDirectives = {
   email: EmailDirective,
