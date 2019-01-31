@@ -9,7 +9,7 @@ Please note we have a code of conduct, please follow it in all your interactions
 - Updates to specific sections of the tutorial should be made against the branch corresponding to that section
 - Updates to the docs must accompany any updates to the code examples
 - The PR template must be used and completed in its entirety
-  - The template not only helps drive PR discussion, but also details the change so other can learn about the change
+- The template not only helps drive PR discussion, but also details the change so others can learn about the change
 - Once PR is merged into specific branch, repository maintainers will merge forward through all subsequent branches to master
 
 ## Code of Conduct
